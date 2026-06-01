@@ -1,0 +1,886 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Free Play Route Tracker</title>
+<style>
+  :root {
+    --bg:#071018;
+    --panel:#0d1724;
+    --card:#111d2c;
+    --card2:#0b1420;
+    --line:#203044;
+    --text:#edf5ff;
+    --muted:#8aa0b8;
+    --soft:#52657c;
+    --accent:#2dd4bf;
+    --yellow:#fbbf24;
+    --green:#22c55e;
+    --red:#ef4444;
+    --pin:#a78bfa;
+  }
+
+  * { box-sizing:border-box; }
+
+  body {
+    margin:0;
+    background:var(--bg);
+    color:var(--text);
+    font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+    line-height:1.35;
+  }
+
+  header {
+    position:sticky;
+    top:0;
+    z-index:5;
+    background:rgba(7,16,24,.96);
+    backdrop-filter:blur(12px);
+    border-bottom:1px solid var(--line);
+    padding:14px 12px 10px;
+  }
+
+  .wrap {
+    max-width:980px;
+    margin:0 auto;
+  }
+
+  h1 {
+    margin:0;
+    font-size:20px;
+    letter-spacing:.2px;
+  }
+
+  .sub {
+    margin-top:4px;
+    color:var(--muted);
+    font-size:12px;
+  }
+
+  .toolbar {
+    display:grid;
+    grid-template-columns:1fr;
+    gap:8px;
+    margin-top:11px;
+  }
+
+  @media (min-width:700px) {
+    .toolbar { grid-template-columns:1.4fr .7fr .7fr auto auto; }
+  }
+
+  input, select, button, textarea {
+    width:100%;
+    border:1px solid var(--line);
+    background:#081321;
+    color:var(--text);
+    border-radius:10px;
+    padding:10px 11px;
+    font:inherit;
+    font-size:14px;
+  }
+
+  textarea {
+    min-height:58px;
+    resize:vertical;
+    font-size:13px;
+  }
+
+  input:focus, select:focus, textarea:focus {
+    outline:none;
+    border-color:var(--accent);
+  }
+
+  button {
+    cursor:pointer;
+    font-weight:700;
+    white-space:nowrap;
+  }
+
+  .btn-primary {
+    background:var(--accent);
+    color:#031311;
+    border:0;
+  }
+
+  .btn-ghost {
+    background:#0b1420;
+    color:var(--muted);
+  }
+
+  main {
+    max-width:980px;
+    margin:0 auto;
+    padding:12px 12px 60px;
+  }
+
+  .add-panel {
+    display:none;
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:12px;
+    margin-bottom:12px;
+  }
+
+  .add-panel.open {
+    display:block;
+  }
+
+  .add-grid {
+    display:grid;
+    gap:8px;
+  }
+
+  @media (min-width:700px) {
+    .add-grid { grid-template-columns:1fr 1.4fr .5fr auto; align-items:end; }
+  }
+
+  .small-label {
+    display:block;
+    color:var(--muted);
+    font-size:11px;
+    margin-bottom:4px;
+    text-transform:uppercase;
+    letter-spacing:.5px;
+  }
+
+  .stats {
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+    margin-bottom:10px;
+    color:var(--muted);
+    font-size:12px;
+  }
+
+  .pill {
+    border:1px solid var(--line);
+    background:var(--panel);
+    border-radius:999px;
+    padding:6px 9px;
+  }
+
+  .pill b {
+    color:var(--text);
+  }
+
+  .list {
+    display:grid;
+    grid-template-columns:1fr;
+    gap:9px;
+  }
+
+  @media (min-width:720px) {
+    .list { grid-template-columns:1fr 1fr; }
+  }
+
+  .card {
+    background:var(--card);
+    border:1px solid var(--line);
+    border-left:5px solid var(--soft);
+    border-radius:14px;
+    padding:12px;
+  }
+
+  .card.ready12 {
+    border-left-color:var(--yellow);
+  }
+
+  .card.ready24 {
+    border-left-color:var(--green);
+  }
+
+  .card.pinned {
+    box-shadow:0 0 0 1px rgba(167,139,250,.3);
+  }
+
+  .top {
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+
+  .pin {
+    width:auto;
+    padding:5px 8px;
+    border-radius:8px;
+    background:var(--card2);
+    color:var(--muted);
+  }
+
+  .pin.on {
+    color:#fff;
+    border-color:var(--pin);
+    background:rgba(167,139,250,.18);
+  }
+
+  .title {
+    min-width:0;
+    flex:1;
+    font-size:16px;
+    font-weight:800;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+  }
+
+  .timer {
+    font-weight:800;
+    font-size:14px;
+    color:var(--muted);
+    white-space:nowrap;
+  }
+
+  .timer.warn { color:var(--yellow); }
+  .timer.good { color:var(--green); }
+
+  .bar {
+    height:5px;
+    background:#08111f;
+    border-radius:999px;
+    overflow:hidden;
+    margin:10px 0 9px;
+  }
+
+  .fill {
+    height:100%;
+    width:0%;
+    background:var(--soft);
+    border-radius:999px;
+    transition:width .35s ease, background .35s ease;
+  }
+
+  .fill.warn { background:var(--yellow); }
+  .fill.good { background:var(--green); }
+
+  .actions {
+    display:grid;
+    grid-template-columns:1fr auto;
+    gap:8px;
+    margin-bottom:8px;
+  }
+
+  a.open {
+    display:block;
+    text-align:center;
+    text-decoration:none;
+    background:var(--accent);
+    color:#031311;
+    border-radius:10px;
+    padding:10px 12px;
+    font-weight:900;
+  }
+
+  .mini {
+    width:auto;
+    padding:8px 10px;
+    color:var(--muted);
+    background:var(--card2);
+  }
+
+  .note-row {
+    display:grid;
+    gap:6px;
+  }
+
+  .saved {
+    min-height:14px;
+    color:var(--green);
+    font-size:11px;
+    opacity:0;
+    transition:opacity .25s ease;
+  }
+
+  .saved.show {
+    opacity:1;
+  }
+
+  .empty {
+    color:var(--muted);
+    border:1px dashed var(--line);
+    border-radius:14px;
+    padding:18px;
+    text-align:center;
+  }
+
+  footer {
+    color:var(--muted);
+    font-size:12px;
+    padding-top:18px;
+  }
+
+  .danger-zone {
+    margin-top:18px;
+    border-top:1px solid var(--line);
+    padding-top:12px;
+  }
+
+  .danger-zone button {
+    max-width:220px;
+    border-color:rgba(239,68,68,.4);
+    color:#fca5a5;
+  }
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <h1>Free Play Route Tracker</h1>
+    <div class="sub">Simple daily route: open link, timer starts, notes stay saved. Green = 24h ready. Yellow = 12h ready.</div>
+
+    <div class="toolbar">
+      <input id="search" placeholder="Search casinos...">
+      <select id="sortMode" title="Sort mode">
+        <option value="static">Static order</option>
+        <option value="auto">Auto-sort by due</option>
+      </select>
+      <select id="viewMode" title="View mode">
+        <option value="all">All casinos</option>
+        <option value="pinned">Pinned only</option>
+      </select>
+      <button class="btn-ghost" id="addToggle">+ Add</button>
+      <button class="btn-ghost" id="exportBtn">Export</button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <section id="addPanel" class="add-panel">
+    <div class="add-grid">
+      <label>
+        <span class="small-label">Casino name</span>
+        <input id="newName" placeholder="Example: Lucky Casino">
+      </label>
+      <label>
+        <span class="small-label">Link</span>
+        <input id="newUrl" placeholder="https://example.com">
+      </label>
+      <label>
+        <span class="small-label">Timer</span>
+        <select id="newCadence">
+          <option value="24h">24h</option>
+          <option value="12h">12h</option>
+          <option value="3h">3h</option>
+          <option value="1h">1h</option>
+          <option value="48h">48h</option>
+        </select>
+      </label>
+      <button class="btn-primary" id="addCasinoBtn">Add casino</button>
+    </div>
+  </section>
+
+  <section class="stats">
+    <span class="pill"><b id="countTotal">0</b> shown</span>
+    <span class="pill"><b id="countPinned">0</b> pinned</span>
+    <span class="pill"><b id="countReady12">0</b> 12h+</span>
+    <span class="pill"><b id="countReady24">0</b> 24h+</span>
+  </section>
+
+  <section id="list" class="list"></section>
+
+  <footer>
+    <p>Data saves only in this browser using localStorage. No login. No backend. No tracking.</p>
+    <div class="danger-zone">
+      <button class="btn-ghost" id="resetBtn">Reset local data</button>
+    </div>
+  </footer>
+</main>
+
+<script>
+const DEFAULT_CASINOS = [
+  {
+    "name": "Sweepico",
+    "url": "https://sweepico.com/",
+    "cadence": "24h",
+    "note": "Daily free plays / SC offers"
+  },
+  {
+    "name": "NoLimitCoins",
+    "url": "https://nolimitcoins.com/",
+    "cadence": "24h",
+    "note": "Daily rewards"
+  },
+  {
+    "name": "Funrize",
+    "url": "https://funrize.com/",
+    "cadence": "12h",
+    "note": "Adventure Map / rewards every 12h"
+  },
+  {
+    "name": "SweepShark",
+    "url": "https://sweepshark.com/",
+    "cadence": "24h",
+    "note": "Daily catch bonuses"
+  },
+  {
+    "name": "Sportzino",
+    "url": "https://sportzino.com/login",
+    "cadence": "24h",
+    "note": "Prize drops / promos"
+  },
+  {
+    "name": "Zula Casino",
+    "url": "https://zulacasino.com/",
+    "cadence": "24h",
+    "note": "Tournament/prize promos"
+  },
+  {
+    "name": "MrGoodwin",
+    "url": "https://mrgoodwin.com/",
+    "cadence": "24h",
+    "note": "Daily login / boosted packs"
+  },
+  {
+    "name": "TaoFortune",
+    "url": "https://taofortune.com/",
+    "cadence": "24h",
+    "note": "Daily streak / free plays"
+  },
+  {
+    "name": "The Win Zone",
+    "url": "https://thewinzone.com/",
+    "cadence": "24h",
+    "note": "Game promos"
+  },
+  {
+    "name": "Spree",
+    "url": "https://spree.com/",
+    "cadence": "24h",
+    "note": "Free SC / gift spins"
+  },
+  {
+    "name": "JackpotRabbit",
+    "url": "https://jackpotrabbit.com/",
+    "cadence": "24h",
+    "note": "Daily free plays"
+  },
+  {
+    "name": "Ybets",
+    "url": "https://ybets.net/",
+    "cadence": "24h",
+    "note": "Mystery bonus promos"
+  },
+  {
+    "name": "CrownCoins Casino",
+    "url": "https://www.crowncoinscasino.com/",
+    "cadence": "24h",
+    "note": "Bonus coins / daily offers"
+  },
+  {
+    "name": "Clubs Poker",
+    "url": "https://clubspoker.com/promotions/",
+    "cadence": "24h",
+    "note": "Tickets / promo page"
+  },
+  {
+    "name": "Moonspin",
+    "url": "https://moonspin.us/",
+    "cadence": "24h",
+    "note": "Free spins / bonus packs"
+  },
+  {
+    "name": "Win Bonanza",
+    "url": "https://winbonanza.com/",
+    "cadence": "24h",
+    "note": "Battle promos"
+  },
+  {
+    "name": "RealPrize",
+    "url": "https://www.realprize.com/",
+    "cadence": "24h",
+    "note": "Gift / arcade promos"
+  },
+  {
+    "name": "RichSweeps Casino",
+    "url": "https://richsweeps.com/",
+    "cadence": "24h",
+    "note": "Promo codes"
+  },
+  {
+    "name": "myVEGAS Slots",
+    "url": "https://www.myvegas.com/",
+    "cadence": "48h",
+    "note": "Free chips often expire in 48h"
+  },
+  {
+    "name": "SpeedSweeps Casino",
+    "url": "https://speedsweeps.com/",
+    "cadence": "24h",
+    "note": "Promo codes / bonus SC"
+  },
+  {
+    "name": "WOW Vegas",
+    "url": "https://www.wowvegas.com/",
+    "cadence": "24h",
+    "note": "Free spins / store promos"
+  },
+  {
+    "name": "ScarletSands",
+    "url": "https://scarletsands.com/",
+    "cadence": "3h",
+    "note": "Desert Dice / frequent rewards"
+  },
+  {
+    "name": "Legendz Casino",
+    "url": "https://www.legendz.com/en-US/casino/",
+    "cadence": "24h",
+    "note": "Free spins / daily offers"
+  },
+  {
+    "name": "Golden Hearts Games",
+    "url": "https://fun.goldenheartsgames.com/",
+    "cadence": "24h",
+    "note": "Free spins"
+  },
+  {
+    "name": "Coinz",
+    "url": "https://coinz.us/",
+    "cadence": "1h",
+    "note": "Hourly race promos"
+  },
+  {
+    "name": "Cider Casino",
+    "url": "https://cidercasino.com/",
+    "cadence": "24h",
+    "note": "Inbox rewards"
+  },
+  {
+    "name": "CoinsBack Casino",
+    "url": "https://www.coinsbackcasino.com/",
+    "cadence": "24h",
+    "note": "Live play / promos"
+  },
+  {
+    "name": "Sweet Sweeps",
+    "url": "https://sweetsweeps.com/",
+    "cadence": "24h",
+    "note": "Tickets / spin promos"
+  },
+  {
+    "name": "SpinBlitz",
+    "url": "https://www.spinblitz.com/",
+    "cadence": "1h",
+    "note": "Hourly jackpot opt-ins"
+  },
+  {
+    "name": "Funzcity",
+    "url": "https://funzcity.com/",
+    "cadence": "24h",
+    "note": "Daily Express / free plays"
+  }
+];
+
+const STATE_KEY = "free_play_route_tracker_state_v2";
+const CUSTOM_KEY = "free_play_route_tracker_custom_v2";
+const SETTINGS_KEY = "free_play_route_tracker_settings_v2";
+const PIN_LIMIT = 10;
+
+function loadJSON(key, fallback) {
+  try {
+    const raw = localStorage.getItem(key);
+    return raw ? JSON.parse(raw) : fallback;
+  } catch {
+    return fallback;
+  }
+}
+
+function saveJSON(key, value) {
+  localStorage.setItem(key, JSON.stringify(value));
+}
+
+function casinoId(c) {
+  return (c.name + "|" + c.url).toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+}
+
+function allCasinos() {
+  const custom = loadJSON(CUSTOM_KEY, []);
+  const combined = [...DEFAULT_CASINOS, ...custom];
+  const seen = new Set();
+  return combined.filter(c => {
+    const id = casinoId(c);
+    if (seen.has(id)) return false;
+    seen.add(id);
+    return true;
+  }).map(c => ({...c, id: casinoId(c)}));
+}
+
+function getState() {
+  return loadJSON(STATE_KEY, {});
+}
+
+function setState(state) {
+  saveJSON(STATE_KEY, state);
+}
+
+function getSettings() {
+  return loadJSON(SETTINGS_KEY, { sortMode: "static", viewMode: "all" });
+}
+
+function setSettings(settings) {
+  saveJSON(SETTINGS_KEY, settings);
+}
+
+function cadenceHours(cadence) {
+  const n = parseFloat(String(cadence).replace(/[^0-9.]/g, ""));
+  if (!n || Number.isNaN(n)) return 24;
+  return n;
+}
+
+function elapsedMs(iso) {
+  if (!iso) return null;
+  const t = new Date(iso).getTime();
+  if (Number.isNaN(t)) return null;
+  return Math.max(0, Date.now() - t);
+}
+
+function formatElapsed(ms) {
+  if (ms === null) return "ready";
+  const mins = Math.floor(ms / 60000);
+  if (mins < 1) return "now";
+  if (mins < 60) return mins + "m";
+  const hrs = Math.floor(mins / 60);
+  const rem = mins % 60;
+  if (hrs < 48) return hrs + "h" + (rem ? " " + rem + "m" : "");
+  const days = Math.floor(hrs / 24);
+  return days + "d " + (hrs % 24) + "h";
+}
+
+function statusFor(lastClicked) {
+  const ms = elapsedMs(lastClicked);
+  if (ms === null) return { cls: "ready24", timerCls: "good", fillCls: "good", pct: 100 };
+  const hrs = ms / 3600000;
+  if (hrs >= 24) return { cls: "ready24", timerCls: "good", fillCls: "good", pct: 100 };
+  if (hrs >= 12) return { cls: "ready12", timerCls: "warn", fillCls: "warn", pct: Math.min(100, (hrs / 24) * 100) };
+  return { cls: "", timerCls: "", fillCls: "", pct: Math.min(100, (hrs / 24) * 100) };
+}
+
+function saveNote(id, value) {
+  const state = getState();
+  state[id] = state[id] || {};
+  state[id].note = value;
+  setState(state);
+
+  const saved = document.getElementById("saved-" + id);
+  if (saved) {
+    saved.classList.add("show");
+    clearTimeout(saved._t);
+    saved._t = setTimeout(() => saved.classList.remove("show"), 900);
+  }
+}
+
+function markClicked(id) {
+  const state = getState();
+  state[id] = state[id] || {};
+  state[id].lastClicked = new Date().toISOString();
+  state[id].clicks = (state[id].clicks || 0) + 1;
+  setState(state);
+  render();
+}
+
+function togglePin(id) {
+  const state = getState();
+  state[id] = state[id] || {};
+  const isPinned = !!state[id].pinned;
+
+  if (!isPinned) {
+    const pinnedCount = Object.values(state).filter(v => v && v.pinned).length;
+    if (pinnedCount >= PIN_LIMIT) {
+      alert("Top 10 pin limit reached. Unpin one before adding another.");
+      return;
+    }
+  }
+
+  state[id].pinned = !isPinned;
+  setState(state);
+  render();
+}
+
+function escapeHTML(value) {
+  return String(value ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
+function cardHTML(c, state) {
+  const s = state[c.id] || {};
+  const status = statusFor(s.lastClicked);
+  const note = escapeHTML(s.note ?? c.note ?? "");
+  const elapsedText = formatElapsed(elapsedMs(s.lastClicked));
+  const isPinned = !!s.pinned;
+  const safeId = JSON.stringify(c.id);
+
+  return `<article class="card ${status.cls} ${isPinned ? "pinned" : ""}">
+    <div class="top">
+      <button class="pin ${isPinned ? "on" : ""}" onclick='togglePin(${safeId})' title="Pin top 10">📌</button>
+      <div class="title" title="${escapeHTML(c.name)}">${escapeHTML(c.name)}</div>
+      <div class="timer ${status.timerCls}">${elapsedText}</div>
+    </div>
+
+    <div class="bar">
+      <div class="fill ${status.fillCls}" style="width:${status.pct}%"></div>
+    </div>
+
+    <div class="actions">
+      <a class="open" href="${escapeHTML(c.url)}" target="_blank" rel="noopener" onclick='markClicked(${safeId})'>OPEN</a>
+      <button class="mini" onclick='markClicked(${safeId})'>Log</button>
+    </div>
+
+    <div class="note-row">
+      <textarea placeholder="Notes..." oninput='saveNote(${safeId}, this.value)'>${note}</textarea>
+      <span id="saved-${c.id}" class="saved">saved</span>
+    </div>
+  </article>`;
+}
+
+function sortCasinos(rows, state, sortMode) {
+  if (sortMode === "static") {
+    return rows.sort((a, b) => {
+      const ap = state[a.id]?.pinned ? 0 : 1;
+      const bp = state[b.id]?.pinned ? 0 : 1;
+      if (ap !== bp) return ap - bp;
+      return 0;
+    });
+  }
+
+  return rows.sort((a, b) => {
+    const ap = state[a.id]?.pinned ? 0 : 1;
+    const bp = state[b.id]?.pinned ? 0 : 1;
+    if (ap !== bp) return ap - bp;
+
+    const ams = elapsedMs(state[a.id]?.lastClicked);
+    const bms = elapsedMs(state[b.id]?.lastClicked);
+
+    const aDue = ams === null ? Infinity : ams;
+    const bDue = bms === null ? Infinity : bms;
+
+    return bDue - aDue;
+  });
+}
+
+function render() {
+  const state = getState();
+  const settings = getSettings();
+  const search = document.getElementById("search").value.trim().toLowerCase();
+
+  document.getElementById("sortMode").value = settings.sortMode;
+  document.getElementById("viewMode").value = settings.viewMode;
+
+  let rows = allCasinos();
+
+  if (search) {
+    rows = rows.filter(c =>
+      (c.name + " " + c.url + " " + (c.note || "") + " " + c.cadence)
+        .toLowerCase()
+        .includes(search)
+    );
+  }
+
+  if (settings.viewMode === "pinned") {
+    rows = rows.filter(c => state[c.id]?.pinned);
+  }
+
+  rows = sortCasinos(rows, state, settings.sortMode);
+
+  const list = document.getElementById("list");
+  list.innerHTML = rows.length ? rows.map(c => cardHTML(c, state)).join("") : `<div class="empty">No casinos found.</div>`;
+
+  const all = allCasinos();
+  const visibleBase = search ? all.filter(c => (c.name + " " + c.url + " " + (c.note || "") + " " + c.cadence).toLowerCase().includes(search)) : all;
+  document.getElementById("countTotal").textContent = rows.length;
+  document.getElementById("countPinned").textContent = Object.values(state).filter(v => v && v.pinned).length;
+  document.getElementById("countReady12").textContent = visibleBase.filter(c => {
+    const ms = elapsedMs(state[c.id]?.lastClicked);
+    return ms === null || ms >= 12 * 3600000;
+  }).length;
+  document.getElementById("countReady24").textContent = visibleBase.filter(c => {
+    const ms = elapsedMs(state[c.id]?.lastClicked);
+    return ms === null || ms >= 24 * 3600000;
+  }).length;
+}
+
+function addCasino() {
+  const name = document.getElementById("newName").value.trim();
+  let url = document.getElementById("newUrl").value.trim();
+  const cadence = document.getElementById("newCadence").value;
+
+  if (!name || !url) {
+    alert("Add a casino name and link.");
+    return;
+  }
+
+  if (!/^https?:\/\//i.test(url)) {
+    url = "https://" + url;
+  }
+
+  const custom = loadJSON(CUSTOM_KEY, []);
+  custom.push({ name, url, cadence, note: "" });
+  saveJSON(CUSTOM_KEY, custom);
+
+  document.getElementById("newName").value = "";
+  document.getElementById("newUrl").value = "";
+  document.getElementById("newCadence").value = "24h";
+  document.getElementById("addPanel").classList.remove("open");
+  render();
+}
+
+function exportData() {
+  const payload = {
+    exportedAt: new Date().toISOString(),
+    settings: getSettings(),
+    customCasinos: loadJSON(CUSTOM_KEY, []),
+    state: getState()
+  };
+
+  const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "free-play-route-tracker-backup.json";
+  a.click();
+}
+
+document.getElementById("search").addEventListener("input", render);
+
+document.getElementById("sortMode").addEventListener("change", e => {
+  const settings = getSettings();
+  settings.sortMode = e.target.value;
+  setSettings(settings);
+  render();
+});
+
+document.getElementById("viewMode").addEventListener("change", e => {
+  const settings = getSettings();
+  settings.viewMode = e.target.value;
+  setSettings(settings);
+  render();
+});
+
+document.getElementById("addToggle").addEventListener("click", () => {
+  document.getElementById("addPanel").classList.toggle("open");
+});
+
+document.getElementById("addCasinoBtn").addEventListener("click", addCasino);
+document.getElementById("exportBtn").addEventListener("click", exportData);
+
+document.getElementById("resetBtn").addEventListener("click", () => {
+  if (!confirm("Reset all local clicks, pins, notes, and custom casinos on this device?")) return;
+  localStorage.removeItem(STATE_KEY);
+  localStorage.removeItem(CUSTOM_KEY);
+  localStorage.removeItem(SETTINGS_KEY);
+  render();
+});
+
+// Refresh timers without disrupting note typing.
+setInterval(() => {
+  const active = document.activeElement;
+  const typing = active && ["TEXTAREA", "INPUT", "SELECT"].includes(active.tagName);
+  if (!typing) render();
+}, 60000);
+
+render();
+</script>
+</body>
+</html>
