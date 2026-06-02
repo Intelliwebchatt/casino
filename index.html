@@ -1,11 +1,12 @@
 <!doctype html>
-
 <html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>FreePlayRoute | Daily Free-Play Casino Tracker</title>
-  <meta name="description" content="Track your daily free-play casino route without spreadsheets, logins, or clutter.">  <style>
+  <meta name="description" content="Track your daily free-play casino route without spreadsheets, logins, or clutter.">
+
+  <style>
     :root {
       --bg:#050609;
       --panel:#0d121a;
@@ -18,9 +19,7 @@
       --gold:#c9a44c;
     }
 
-    * {
-      box-sizing:border-box;
-    }
+    * { box-sizing:border-box; }
 
     body {
       margin:0;
@@ -30,9 +29,7 @@
       line-height:1.4;
     }
 
-    a {
-      color:inherit;
-    }
+    a { color:inherit; }
 
     .page-hero {
       min-height:100vh;
@@ -108,9 +105,7 @@
       padding:34px 0 62px;
     }
 
-    .hero-content {
-      max-width:760px;
-    }
+    .hero-content { max-width:760px; }
 
     .eyebrow {
       display:inline-flex;
@@ -207,14 +202,8 @@
       box-shadow:0 18px 45px rgba(0,0,0,.28);
     }
 
-    .info h3 {
-      margin:0 0 8px;
-    }
-
-    .info p {
-      margin:0;
-      color:var(--muted);
-    }
+    .info h3 { margin:0 0 8px; }
+    .info p { margin:0; color:var(--muted); }
 
     footer {
       border-top:1px solid rgba(217,222,231,.12);
@@ -225,28 +214,14 @@
     }
 
     @media(min-width:760px) {
-      .actions {
-        grid-template-columns:1fr 1fr;
-      }
-
-      .cards {
-        grid-template-columns:repeat(3,1fr);
-      }
+      .actions { grid-template-columns:1fr 1fr; }
+      .cards { grid-template-columns:repeat(3,1fr); }
     }
 
     @media(max-width:620px) {
-      .nav {
-        align-items:flex-start;
-      }
-
-      .nav-actions {
-        flex-direction:column;
-      }
-
-      .nav a.btn {
-        padding:8px 10px;
-        font-size:12px;
-      }
+      .nav { align-items:flex-start; }
+      .nav-actions { flex-direction:column; }
+      .nav a.btn { padding:8px 10px; font-size:12px; }
 
       .page-hero {
         background-image:
@@ -263,70 +238,79 @@
         padding-top:22px;
       }
     }
-  </style></head><body>
+  </style>
+</head>
+
+<body>
   <div class="page-hero">
     <div class="wrap">
       <nav class="nav">
         <div class="brand">
           <div class="mark"></div>
           <div>FreePlayRoute</div>
-        </div>    <div class="nav-actions">
-      <a class="btn secondary" href="cashout-guide.html">Guide</a>
-      <a class="btn secondary" href="tracker.html">Launch</a>
+        </div>
+
+        <div class="nav-actions">
+          <a class="btn secondary" href="cashout-guide.html">Guide</a>
+          <a class="btn secondary" href="tracker.html">Launch</a>
+        </div>
+      </nav>
+
+      <main>
+        <section class="hero">
+          <div class="hero-content">
+            <div class="eyebrow">
+              <span class="dot"></span>
+              Daily route tracker
+            </div>
+
+            <h1>Track your free-play route.</h1>
+
+            <p class="lead">
+              Pin your favorite sweepstakes casinos, track your last click, and see what is ready again without spreadsheets, logins, or clutter.
+            </p>
+
+            <div class="actions">
+              <a class="btn primary" href="tracker.html">Launch Tracker</a>
+              <a class="btn secondary" href="cashout-guide.html">Cashout Badge Guide</a>
+              <a class="btn secondary" href="mailto:aslockhart10@gmail.com?subject=Casino%20Request&body=Casino%20name:%0ALink:%0AWhy%20it%20should%20be%20added:%0A">Request Casino</a>
+            </div>
+
+            <div class="chips">
+              <span class="chip">No login</span>
+              <span class="chip">Local browser storage</span>
+              <span class="chip">12h / 24h status</span>
+              <span class="chip">Cashout badges</span>
+              <span class="chip">Pin top 10</span>
+            </div>
+          </div>
+        </section>
+      </main>
     </div>
-  </nav>
+  </div>
 
-  <main>
-    <section class="hero">
-      <div class="hero-content">
-        <div class="eyebrow">
-          <span class="dot"></span>
-          Daily route tracker
-        </div>
-
-        <h1>Track your free-play route.</h1>
-
-        <p class="lead">
-          Pin your favorite sweepstakes casinos, track your last click, and see what is ready again without spreadsheets, logins, or clutter.
-        </p>
-
-        <div class="actions">
-          <a class="btn primary" href="tracker.html">Launch Tracker</a>
-          <a class="btn secondary" href="cashout-guide.html">Cashout Badge Guide</a>
-          <a class="btn secondary" href="mailto:aslockhart10@gmail.com?subject=Casino%20Request&body=Casino%20name:%0ALink:%0AWhy%20it%20should%20be%20added:%0A">Request Casino</a>
-        </div>
-
-        <div class="chips">
-          <span class="chip">No login</span>
-          <span class="chip">Local browser storage</span>
-          <span class="chip">12h / 24h status</span>
-          <span class="chip">Cashout badges</span>
-          <span class="chip">Pin top 10</span>
-        </div>
-      </div>
-    </section>
-  </main>
-</div>
-
-  </div>  <section class="section">
+  <section class="section">
     <div class="wrap">
       <div class="cards">
         <div class="info">
           <h3>Built for daily play</h3>
           <p>Open a site, start the timer, make a note, and move to the next one.</p>
-        </div>    <div class="info">
-      <h3>Private by default</h3>
-      <p>Your timers and notes stay in your browser. No account and no backend.</p>
-    </div>
+        </div>
 
-    <div class="info">
-      <h3>Cashout-aware</h3>
-      <p>Badges flag payout speed, method, and review friction without cluttering the tracker.</p>
-    </div>
-  </div>
-</div>
+        <div class="info">
+          <h3>Private by default</h3>
+          <p>Your timers and notes stay in your browser. No account and no backend.</p>
+        </div>
 
-  </section>  <footer>
+        <div class="info">
+          <h3>Cashout-aware</h3>
+          <p>Badges flag payout speed, method, and review friction without cluttering the tracker.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
     <div class="wrap">
       FreePlayRoute is a route tracker and curated link list. It is not gambling advice, financial advice, or a guarantee of winnings. Follow each site's rules, age requirements, and local laws.
     </div>
