@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Suggest a Casino | FreePlayRoute</title>
+  <meta name="description" content="Suggest a sweepstakes casino, report payout info, or contact FreePlayRoute.">
+  <style>
+    :root{--bg:#050609;--panel:#0d121a;--card:#111925;--line:#273241;--text:#f5f7fb;--muted:#9aa4b2;--silver:#d9dee7;--gold:#c9a44c}
+    *{box-sizing:border-box}
+    body{margin:0;min-height:100vh;background:radial-gradient(circle at 20% -10%,rgba(148,163,184,.18),transparent 32%),radial-gradient(circle at 90% 10%,rgba(201,164,76,.10),transparent 28%),linear-gradient(180deg,#050609,#08111d 45%,#050609);color:var(--text);font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;line-height:1.4}
+    .wrap{max-width:760px;margin:0 auto;padding:22px 16px 60px}
+    .nav{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:28px}
+    .brand{font-weight:900;letter-spacing:.08em;text-transform:uppercase;color:#e5ebf3}
+    .nav a{color:#cbd5e1;text-decoration:none;border:1px solid rgba(148,163,184,.22);border-radius:12px;padding:8px 10px;background:rgba(11,19,32,.75);font-weight:800}
+    .card{background:linear-gradient(145deg,rgba(18,27,42,.96),rgba(9,15,25,.98));border:1px solid rgba(148,163,184,.18);border-radius:24px;padding:22px;box-shadow:0 24px 55px rgba(0,0,0,.34),0 1px 0 rgba(255,255,255,.04) inset}
+    h1{margin:0 0 10px;font-size:clamp(34px,9vw,58px);line-height:.95;letter-spacing:-.055em;background:linear-gradient(135deg,#fff,#d7dde7 52%,#8390a2);-webkit-background-clip:text;background-clip:text;color:transparent}
+    .lead{margin:0 0 22px;color:#b9c3d2;font-size:17px}
+    form{display:grid;gap:14px}
+    label{display:grid;gap:6px;color:#dbe3ee;font-size:13px;font-weight:800}
+    input,select,textarea,button{width:100%;border:1px solid rgba(148,163,184,.24);background:rgba(7,12,20,.86);color:var(--text);border-radius:13px;padding:12px;font:inherit;font-size:15px}
+    textarea{min-height:140px;resize:vertical}
+    input:focus,select:focus,textarea:focus{outline:none;border-color:rgba(215,221,231,.7);box-shadow:0 0 0 3px rgba(215,221,231,.08)}
+    button{margin-top:6px;cursor:pointer;border:0;background:linear-gradient(135deg,#fff,#c5ccd7 55%,#7c899b);color:#050609;font-weight:950;letter-spacing:.08em;text-transform:uppercase}
+    .fine{margin-top:16px;color:var(--muted);font-size:12px}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <nav class="nav">
+      <div class="brand">FreePlayRoute</div>
+      <a href="index.html">Home</a>
+    </nav>
+    <section class="card">
+      <h1>Suggest a casino.</h1>
+      <p class="lead">Send a casino to add, report wrong payout info, share a cashout experience, or contact me about the tracker.</p>
+      <form name="casino-suggestion" method="POST" data-netlify="true" action="/thanks.html">
+        <input type="hidden" name="form-name" value="casino-suggestion">
+        <label>What are you sending?
+          <select name="request_type" required>
+            <option value="">Choose one</option>
+            <option value="suggest-casino">Suggest a casino</option>
+            <option value="fix-info">Fix casino info</option>
+            <option value="cashout-report">Report cashout experience</option>
+            <option value="general-contact">General contact</option>
+          </select>
+        </label>
+        <label>Casino name
+          <input type="text" name="casino_name" placeholder="Example: WOW Vegas">
+        </label>
+        <label>Casino link
+          <input type="url" name="casino_url" placeholder="https://">
+        </label>
+        <label>Your email
+          <input type="email" name="email" autocomplete="email" placeholder="you@example.com">
+        </label>
+        <label>Message
+          <textarea name="message" required placeholder="Tell me what should be added, corrected, or checked."></textarea>
+        </label>
+        <button type="submit">Send</button>
+      </form>
+      <p class="fine">Submissions are handled through Netlify Forms. Do not send passwords, private account details, or financial information.</p>
+    </section>
+  </div>
+</body>
+</html>
